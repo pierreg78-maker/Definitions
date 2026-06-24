@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice de Vocabulaire - Niveau Avancé</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f3f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 320px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 15px;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .front {
+            background-color: #ffffff;
+            color: #333333;
+            border: 2px solid #dcdde1;
+        }
+
+        .back {
+            background-color: #34495e;
+            color: #ffffff;
+            transform: rotateY(180deg);
+        }
+
+        .definition {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .hint {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            font-style: italic;
+            background-color: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+        }
+
+        .word {
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #2ecc71;
+            text-align: center;
+        }
+
+        .nav-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 0 10px;
+        }
+
+        .nav-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .nav-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .progress {
+            margin-top: 15px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card-container" onclick="flipCard()">
+        <div class="card" id="card">
+            <div class="front">
+                <p class="definition" id="definition">Chargement...</p>
+                <p class="hint" id="hint"></p>
+            </div>
+            <div class="back">
+                <p style="font-size: 0.9rem; color: #bdc3c7; margin-bottom: 10px;">Le mot recherché :</p>
+                <p class="word" id="word">...</p>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <button class="nav-btn" id="prevBtn" onclick="prevCard()" disabled>Précédent</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextCard()">Suivant</button>
+    </div>
+
+    <div class="progress" id="progress">Carte 1 / 1</div>
+</div>
+
+<script>
+    const flashcards = [
+        {
+            definition: "Qui est parfait, total, sans restriction ni condition.",
+            hint: "Indice : On parle par exemple d'une certitude ou d'un pouvoir qui n'a pas de limite.",
+            word: "ABSOLU"
+        },
+        {
+            definition: "Qui se rapporte aux études, à l'enseignement supérieur ou aux traditions d'une haute institution.",
+            hint: "Indice : On parle souvent d'une année ___ ou d'un parcours scolaire.",
+            word: "ACADÉMIQUE"
+        },
+        {
+            definition: "Une action remarquable, une grande réussite ou l'aboutissement d'un projet difficile.",
+            hint: "Indice : Synonyme d'un accomplissement majeur ou d'une prouesse.",
+            word: "RÉALISATION"
+        },
+        {
+            definition: "La gestion, la direction et l'organisation d'une entreprise ou d'un service public.",
+            hint: "Indice : C'est la structure qui s'occupe des papiers officiels et des règles.",
+            word: "ADMINISTRATION"
+        },
+        {
+            definition: "Une supériorité, un profit ou un privilège que l'on tire d'une situation par rapport aux autres.",
+            hint: "Indice : C'est le contraire d'un inconvénient ou d'un désavantage.",
+            word: "AVANTAGE"
+        },
+        {
+            definition: "Une opinion, une recommandation ou une opinion exprimée pour guider quelqu'un dans ses choix.",
+            hint: "Indice : On peut 'demander' ou 'suivre' le ___ de quelqu'un de sage.",
+            word: "CONSEIL"
+        },
+        {
+            definition: "Une situation imprévue, souvent grave, qui exige des décisions et des actions immédiates.",
+            hint: "Indice : On appelle le numéro des ___ en cas d'accident ou de grand danger.",
+            word: "URGENCE"
+        },
+        {
+            definition: "De façon claire, évidente, et sans qu'il y ait de doute possible.",
+            hint: "Indice : Synonyme de 'visiblement' ou 'selon toute apparence'.",
+            word: "APPAREMMENT"
+        }
+    ];
+
+    let currentIndex = 0;
+    const cardEl = document.getElementById('card');
+
+    function updateCard() {
+        cardEl.classList.remove('flipped');
+        
+        setTimeout(() => {
+            document.getElementById('definition').innerText = flashcards[currentIndex].definition;
+            document.getElementById('hint').innerText = flashcards[currentIndex].hint;
+            document.getElementById('word').innerText = flashcards[currentIndex].word;
+            document.getElementById('progress').innerText = `Carte ${currentIndex + 1} / ${flashcards.length}`;
+            
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === flashcards.length - 1;
+        }, 150); 
+    }
+
+    function flipCard() {
+        cardEl.classList.toggle('flipped');
+    }
+
+    function nextCard() {
+        if (currentIndex < flashcards.length - 1) {
+            currentIndex++;
+            updateCard();
+        }
+    }
+
+    function prevCard() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCard();
+        }
+    }
+
+    updateCard();
+</script>
+
+</body>
+</html>
