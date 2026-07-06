@@ -121,6 +121,76 @@
             color: #7f8c8d;
             font-size: 0.9rem;
         }
+
+        .level-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .level-btn {
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 14px 10px;
+            width: 100px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            opacity: 0.55;
+            transform: scale(0.95);
+            transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .level-btn.active {
+            opacity: 1;
+            transform: scale(1.08);
+            border-color: #ffffff;
+        }
+
+        .level-btn.facile {
+            background-color: #2ecc71;
+        }
+
+        .level-btn.facile.active {
+            box-shadow: 0 0 0 5px rgba(46,204,113,0.45), 0 0 18px 6px rgba(46,204,113,0.6), 0 6px 14px rgba(0,0,0,0.25);
+            animation: pulseFacile 1.8s ease-in-out infinite;
+        }
+
+        .level-btn.moyen {
+            background-color: #f39c12;
+        }
+
+        .level-btn.moyen.active {
+            box-shadow: 0 0 0 5px rgba(243,156,18,0.45), 0 0 18px 6px rgba(243,156,18,0.6), 0 6px 14px rgba(0,0,0,0.25);
+            animation: pulseMoyen 1.8s ease-in-out infinite;
+        }
+
+        .level-btn.difficile {
+            background-color: #e74c3c;
+        }
+
+        .level-btn.difficile.active {
+            box-shadow: 0 0 0 5px rgba(231,76,60,0.45), 0 0 18px 6px rgba(231,76,60,0.6), 0 6px 14px rgba(0,0,0,0.25);
+            animation: pulseDifficile 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulseFacile {
+            0%, 100% { box-shadow: 0 0 0 5px rgba(46,204,113,0.45), 0 0 18px 6px rgba(46,204,113,0.6), 0 6px 14px rgba(0,0,0,0.25); }
+            50% { box-shadow: 0 0 0 7px rgba(46,204,113,0.3), 0 0 26px 10px rgba(46,204,113,0.75), 0 6px 14px rgba(0,0,0,0.25); }
+        }
+
+        @keyframes pulseMoyen {
+            0%, 100% { box-shadow: 0 0 0 5px rgba(243,156,18,0.45), 0 0 18px 6px rgba(243,156,18,0.6), 0 6px 14px rgba(0,0,0,0.25); }
+            50% { box-shadow: 0 0 0 7px rgba(243,156,18,0.3), 0 0 26px 10px rgba(243,156,18,0.75), 0 6px 14px rgba(0,0,0,0.25); }
+        }
+
+        @keyframes pulseDifficile {
+            0%, 100% { box-shadow: 0 0 0 5px rgba(231,76,60,0.45), 0 0 18px 6px rgba(231,76,60,0.6), 0 6px 14px rgba(0,0,0,0.25); }
+            50% { box-shadow: 0 0 0 7px rgba(231,76,60,0.3), 0 0 26px 10px rgba(231,76,60,0.75), 0 6px 14px rgba(0,0,0,0.25); }
+        }
     </style>
    </head>
 <body>
@@ -135,6 +205,11 @@
     <h4>Retournez la carte pour voir la réponse</h4>
     
 <div class="container">
+    <div class="level-selector">
+        <button class="level-btn facile active" id="btnFacile" onclick="selectLevel('facile')">Facile</button>
+        <button class="level-btn moyen" id="btnMoyen" onclick="selectLevel('moyen')">Moyen</button>
+        <button class="level-btn difficile" id="btnDifficile" onclick="selectLevel('difficile')">Difficile</button>
+    </div>
     <div class="card-container" onclick="flipCard()">
         <div class="card" id="card">
             <div class="front">
@@ -157,156 +232,281 @@
 </div>
 
 <script>
-    const flashcards = [
-  {word: "COHÉSION", definition: "Force qui unit les éléments d'un groupe.", hint: "Ex : solidarité."},
-  {word: "ÉLABORER", definition: "Créer quelque chose de manière réfléchie.", hint: "Ex : construire un plan."},
-  {word: "CONSTATER", definition: "Reconnaître une réalité par observation.", hint: "Ex : vérifier un fait."},
-  {word: "ATTENTION", definition: "Concentration sur quelque chose.", hint: "Ex : vigilance."},
-  {word: "DÉBAT", definition: "Discussion organisée sur un sujet.", hint: "Ex : échange d'arguments."},
-  {word: "ANALYSER", definition: "Examiner en détail pour comprendre.", hint: "Ex : étudier un problème."},
-  {word: "ACCÉDER", definition: "Parvenir à entrer ou obtenir un accès.", hint: "Ex : entrer dans un lieu."},
-  {word: "PENSER", definition: "Avoir des idées dans son esprit.", hint: "Ex : réfléchir."},
-  {word: "ANALOGIE", definition: "Ressemblance entre des choses différentes.", hint: "Ex : comparaison ou similitude."},
-  {word: "ÉQUIVALENT", definition: "Qui a la même valeur ou fonction.", hint: "Ex : approchant."},
-  {word: "QUESTION", definition: "Phrase ou idée qui demande une réponse.", hint: "Ex : interrogation."},
-  {word: "COMPLEXITÉ", definition: "Caractère de ce qui est compliqué.", hint: "Ex : difficulté à comprendre."},
-  {word: "CONFRONTER", definition: "Mettre face à une réalité ou un problème.", hint: "Ex : affronter."},
-  {word: "CONSOLIDER", definition: "Rendre plus solide ou stable.", hint: "Ex : renforcer une structure."},
-  {word: "CULTIVÉ", definition: "Qui a une grande culture intellectuelle.", hint: "Ex : personne érudite."},
-  {word: "CRITÈRE", definition: "Règle ou norme pour évaluer.", hint: "Ex : standard de jugement."},
-  {word: "CONTRIBUTION", definition: "Participation à un effort commun.", hint: "Ex : apport individuel."},
-  {word: "CAPABLE", definition: "Qui peut faire quelque chose.", hint: "Ex : réussir une tâche."},
-  {word: "CHERCHER", definition: "Essayer de trouver quelque chose.", hint: "Ex : trouver un objet."},
-  {word: "NOUVEAU", definition: "Qui n'existait pas avant.", hint: "Ex : récent."},
-  {word: "MANGER", definition: "Prendre un repas ou de la nourriture.", hint: "Ex : se nourrir."},
-  {word: "ÉCOUTER", definition: "Prêter attention à un son ou une parole.", hint: "Ex : entendre volontairement."},
-  {word: "ENVIRONNEMENT", definition: "Milieu naturel ou social.", hint: "Ex : cadre de vie."},
-  {word: "DIMENSION", definition: "Mesure dans une direction.", hint: "Ex : longueur, largeur."},
-  {word: "ARTICLE", definition: "Texte écrit dans un journal ou une revue.", hint: "Ex : publication périodique."},
-  {word: "BONHEUR", definition: "État de joie profonde et durable.", hint: "Ex : être très heureux."},
-  {word: "CONFIANCE", definition: "Sentiment de sécurité envers quelqu'un.", hint: "Ex : faire confiance."},
-  {word: "ACCIDENT", definition: "Événement imprévu causant souvent un dommage.", hint: "Ex : choc sur la route."},
-  {word: "DÉDUCTIF", definition: "Qui procède par déduction.", hint: "Ex : raisonnement logique."},
-  {word: "COMPRENDRE", definition: "Saisir le sens de quelque chose.", hint: "Ex : comprendre une explication."},
-  {word: "CRITIQUE", definition: "Analyse ou jugement sur une œuvre.", hint: "Ex : avis constructif."},
-  {word: "CONSTRUIRE", definition: "Bâtir ou édifier quelque chose.", hint: "Ex : créer une structure."},
-  {word: "DIFFICILE", definition: "Qui n'est pas facile à faire.", hint: "Ex : un problème complexe."},
-  {word: "INTÉRÊT", definition: "Ce qui attire l'attention.", hint: "Ex : curiosité."},
-  {word: "ASTREINDRE", definition: "Obliger quelqu'un à faire quelque chose.", hint: "Ex : contraindre."},
-  {word: "CONCIS", definition: "Qui exprime beaucoup en peu de mots.", hint: "Ex : breveté."},
-  {word: "BIENVEILLANCE", definition: "Disposition à vouloir du bien.", hint: "Ex : attitude positive."},
-  {word: "CONNAISSANCE", definition: "Savoir acquis par l'étude ou l'expérience.", hint: "Ex : savoir théorique ou pratique."},
-  {word: "CONSIDÉRABLE", definition: "Qui mérite une grande attention.", hint: "Ex : important ou notable."},
-  {word: "CONSÉQUENT", definition: "Qui a des effets importants.", hint: "Ex : résultat significatif."},
-  {word: "COOPÉRATION", definition: "Action de travailler ensemble.", hint: "Ex : collaboration."},
-  {word: "CONFLIT", definition: "Affrontement d'idées ou d'intérêts.", hint: "Ex : désaccord."},
-  {word: "AVANTAGE", definition: "Point positif dans une situation.", hint: "Ex : ce qui aide à réussir."},
-  {word: "MONTRER", definition: "Faire voir quelque chose.", hint: "Ex : présenter un objet."},
-  {word: "IMPORTANT", definition: "Qui a une grande valeur ou influence.", hint: "Ex : essentiel."},
-  {word: "COHÉRENCE", definition: "Qualité de ce qui est logique et lié.", hint: "Ex : unité entre les parties."},
-  {word: "TRAVAILLER", definition: "Faire une activité professionnelle ou scolaire.", hint: "Ex : effort productif."},
-  {word: "CONSEQUENCE", definition: "Résultat logique d'une action.", hint: "Ex : effet d'une cause."},
-  {word: "AUTONOMIE", definition: "Capacité à se gouverner soi-même.", hint: "Ex : indépendance."},
-  {word: "BÉNÉVOLE", definition: "Qui agit sans attente de récompense.", hint: "Ex : volontaire."},
-  {word: "COLLABORATION", definition: "Travail commun entre plusieurs personnes.", hint: "Ex : coopération."},
-  {word: "COMPRÉHENSIBLE", definition: "Qui peut être compris.", hint: "Ex : clair et accessible."},
-  {word: "CONCEVOIR", definition: "Imaginer ou créer dans l'esprit.", hint: "Ex : inventer un projet."},
-  {word: "UTILISER", definition: "Se servir de quelque chose.", hint: "Ex : employer un outil."},
-  {word: "ACADÉMIQUE", definition: "Qui concerne l'enseignement supérieur ou les études.", hint: "Ex : une année universitaire."},
-  {word: "LANGAGE", definition: "Manière de s'exprimer avec des mots.", hint: "Ex : langue parlée."},
-  {word: "COMPATIBILITÉ", definition: "Capacité à coexister sans conflit.", hint: "Ex : harmonie entre systèmes."},
-  {word: "CONFIRMER", definition: "Rendre certain ou officiel.", hint: "Ex : valider une information."},
-  {word: "PERMETTRE", definition: "Autoriser quelque chose.", hint: "Ex : donner la permission."},
-  {word: "CONSEIL", definition: "Recommandation donnée pour aider.", hint: "Ex : une aide pour décider."},
-  {word: "CONTRADICTION", definition: "Opposition entre deux affirmations.", hint: "Ex : désaccord logique."},
-  {word: "CIRCONSTANCE", definition: "Condition ou fait accompagnant un événement.", hint: "Ex : contexte particulier."},
-  {word: "CONTRIBUER", definition: "Apporter une aide ou une participation.", hint: "Ex : participer à un projet."},
-  {word: "DÉBROUILLARD", definition: "Qui sait se tirer des situations difficiles.", hint: "Ex : ingénieux."},
-  {word: "ABSOLU", definition: "Qui est total, sans limite ni condition.", hint: "Ex : une vérité sans exception."},
-  {word: "RESTER", definition: "Ne pas partir.", hint: "Ex : demeurer."},
-  {word: "CONTRADICTOIRE", definition: "Qui contient une opposition.", hint: "Ex : débat où s'affrontent des avis."},
-  {word: "COMPLÉMENTARITÉ", definition: "Relation où deux choses se complètent.", hint: "Ex : mutualisation des forces."},
-  {word: "ARGUMENT", definition: "Raison avancée pour justifier une idée.", hint: "Ex : preuve dans un débat."},
-  {word: "FAMILLE", definition: "Groupe de personnes liées par parenté.", hint: "Ex : parents et enfants."},
-  {word: "PARLER", definition: "Exprimer des idées avec des mots.", hint: "Ex : conversation."},
-  {word: "DÉFINITIF", definition: "Qui est sans retour ou irrévocable.", hint: "Ex : décision finale."},
-  {word: "COMPARER", definition: "Examiner les différences et similitudes.", hint: "Ex : mettre en parallèle."},
-  {word: "BESOIN", definition: "Nécessité de quelque chose.", hint: "Ex : avoir faim ou soif."},
-  {word: "CONTENU", definition: "Ce qui est inclus dans un récipient ou un texte.", hint: "Ex : matière ou substance."},
-  {word: "RAPIDE", definition: "Qui va vite.", hint: "Ex : contraire de lent."},
-  {word: "MESSAGE", definition: "Information transmise à quelqu'un.", hint: "Ex : SMS ou note."},
-  {word: "NATUREL", definition: "Qui vient sans artifice.", hint: "Ex : non artificiel."},
-  {word: "CHOISIR", definition: "Sélectionner entre plusieurs options.", hint: "Ex : décider entre deux choses."},
-  {word: "CONFÉRENCE", definition: "Réunion pour discuter d'un sujet précis.", hint: "Ex : séminaire."},
-  {word: "GARDER", definition: "Conserver quelque chose.", hint: "Ex : ne pas perdre."},
-  {word: "COMPÉTENCE", definition: "Capacité à accomplir une tâche.", hint: "Ex : savoir-faire."},
-  {word: "CONSULTER", definition: "Demander un avis ou une information.", hint: "Ex : se renseigner."},
-  {word: "CALCULER", definition: "Effectuer une opération mathématique.", hint: "Ex : faire une addition."},
-  {word: "DÉFINIR", definition: "Donner une explication précise.", hint: "Ex : clarifier un concept."},
-  {word: "RAISON", definition: "Explication logique.", hint: "Ex : justification."},
-  {word: "JEUNE", definition: "Qui a peu d'âge.", hint: "Ex : enfant ou adolescent."},
-  {word: "DÉCIDER", definition: "Prendre une décision.", hint: "Ex : faire un choix."},
-  {word: "CONVAINCRE", definition: "Amener quelqu'un à partager une opinion.", hint: "Ex : persuader."},
-  {word: "CANDIDAT", definition: "Personne qui postule à un poste.", hint: "Ex : participant à une élection."},
-  {word: "EXPÉRIENCE", definition: "Connaissance acquise par la pratique.", hint: "Ex : savoir-faire."},
-  {word: "DIFFÉRENCE", definition: "Ce qui distingue deux choses.", hint: "Ex : particularité."},
-  {word: "ESSAYER", definition: "Tenter de faire quelque chose.", hint: "Ex : tester une action."},
-  {word: "CONCLURE", definition: "Terminer un raisonnement.", hint: "Ex : finir une argumentation."},
-  {word: "DÉCISION", definition: "Choix fait après réflexion.", hint: "Ex : résolution prise."},
-  {word: "ACQUÉRIR", definition: "Obtenir par l'effort ou l'expérience.", hint: "Ex : apprendre une compétence."},
-  {word: "EXEMPLE", definition: "Cas concret illustrant une idée.", hint: "Ex : illustration."},
-  {word: "ASSOCIER", definition: "Mettre ensemble des éléments.", hint: "Ex : lier deux idées."},
-  {word: "DÉMONTRER", definition: "Prouver par des faits ou des arguments.", hint: "Ex : montrer une vérité."},
-  {word: "CHAPITRE", definition: "Division d'un livre ou d'un texte.", hint: "Ex : partie d'un roman."},
-  {word: "BÉNÉFICE", definition: "Avantage ou gain obtenu.", hint: "Ex : profit financier."},
-  {word: "DIVERSITÉ", definition: "Variété d'éléments différents.", hint: "Ex : richesse des différences."},
-  {word: "ACCOMPAGNER", definition: "Être avec quelqu'un pour l'aider ou le guider.", hint: "Ex : aller avec quelqu'un."},
-  {word: "IMAGINER", definition: "Créer des images dans son esprit.", hint: "Ex : inventer mentalement."},
-  {word: "FACILE", definition: "Qui demande peu d'effort.", hint: "Ex : simple à faire."},
-  {word: "LIRE", definition: "Comprendre un texte écrit.", hint: "Ex : livre ou article."},
-  {word: "ÉLÉMENT", definition: "Composant d'un ensemble.", hint: "Ex : partie constitutive."},
-  {word: "DIRECTEUR", definition: "Personne qui dirige une organisation.", hint: "Ex : chef d'entreprise."},
-  {word: "CONTEXTE", definition: "Ensemble des circonstances autour d'un événement.", hint: "Ex : cadre d'une situation."},
-  {word: "DISCUTER", definition: "Parler avec échange d'idées.", hint: "Ex : débattre calmement."},
-  {word: "ENQUÊTE", definition: "Recherche approfondie sur un sujet.", hint: "Ex : investigation."},
-  {word: "DÉVELOPPER", definition: "Faire évoluer ou grandir.", hint: "Ex : améliorer une idée."},
-  {word: "APPRÉHENDER", definition: "Saisir par l'esprit ou les sens.", hint: "Ex : comprendre profondément."},
-  {word: "ANTHROPOLOGIE", definition: "Étude des sociétés et des cultures humaines.", hint: "Ex : science sociale."},
-  {word: "ACCEPTER", definition: "Dire oui, consentir à quelque chose.", hint: "Ex : accepter une proposition."},
-  {word: "VOIR", definition: "Percevoir avec les yeux.", hint: "Ex : regarder."},
-  {word: "EFFICACITÉ", definition: "Capacité à produire un résultat.", hint: "Ex : rendement optimal."},
-  {word: "ADMINISTRATION", definition: "Organisation qui gère un service ou un État.", hint: "Ex : services publics."},
-  {word: "COMMUNIQUER", definition: "Transmettre une information.", hint: "Ex : échanger des idées."},
-  {word: "DISTINGUER", definition: "Reconnaître une différence.", hint: "Ex : discerner."},
-  {word: "ASSIMILER", definition: "Intégrer une connaissance ou une culture.", hint: "Ex : absorber une information."},
-  {word: "DOCUMENT", definition: "Support contenant une information écrite.", hint: "Ex : texte officiel."},
-  {word: "ARCHÉTYPE", definition: "Modèle original ou idéal.", hint: "Ex : exemple parfait."},
-  {word: "ALTERNATIVE", definition: "Choix entre deux options exclusives.", hint: "Ex : solution de rechange."},
-  {word: "ARGUMENTATION", definition: "Art de raisonner pour convaincre.", hint: "Ex : discours logique."},
-  {word: "AFFIRMATION", definition: "Déclaration formelle d'une vérité.", hint: "Ex : assertion."},
-  {word: "CRÉATIVITÉ", definition: "Capacité à innover ou inventer.", hint: "Ex : imagination fertile."},
-  {word: "ÉVOLUTION", definition: "Changement progressif.", hint: "Ex : transformation."},
-  {word: "EXPLIQUER", definition: "Rendre quelque chose clair.", hint: "Ex : donner des détails."},
-  {word: "ALGORITHME", definition: "Ensemble de règles pour résoudre un problème.", hint: "Ex : procédure informatique."},
-  {word: "AMBIGUÏTÉ", definition: "Caractère de ce qui peut avoir plusieurs sens.", hint: "Ex : manque de clarté."},
-  {word: "COMPREHENSION", definition: "Acte de saisir le sens.", hint: "Ex : compréhension d'un texte."},
-  {word: "ÉVALUER", definition: "Estimer la valeur ou l'importance.", hint: "Ex : juger une performance."},
-  {word: "CAPACITÉ", definition: "Pouvoir ou aptitude à faire quelque chose.", hint: "Ex : mémoire ou talent."},
-  {word: "ÉTABLIR", definition: "Fonder ou installer quelque chose.", hint: "Ex : créer une règle."},
-  {word: "OUVRIR", definition: "Rendre accessible en retirant une fermeture.", hint: "Ex : porte ou livre."},
-  {word: "JOLI", definition: "Beau de manière simple.", hint: "Ex : agréable à voir."},
-  {word: "ÉTUDE", definition: "Travail d'analyse ou d'apprentissage.", hint: "Ex : recherche approfondie."},
-  {word: "PRENDRE", definition: "Saisir ou utiliser quelque chose.", hint: "Ex : attraper."},
-  {word: "CULTURE", definition: "Ensemble des connaissances et traditions.", hint: "Ex : patrimoine intellectuel."},
-  {word: "ARBITRAIRE", definition: "Qui dépend de la volonté sans règle fixe.", hint: "Ex : décision souvent injuste."},
-  {word: "ANTICIPER", definition: "Prévoir à l'avance.", hint: "Ex : devancer un événement."},
-  {word: "ABSTRACTION", definition: "Action de considérer une idée de manière générale.", hint: "Ex : concept théorique."},
-  {word: "ADAPTATION", definition: "Processus d'ajustement à une nouvelle situation.", hint: "Ex : modification."},
-  {word: "ADHÉRENCE", definition: "Action de se joindre à une idée ou un groupe.", hint: "Ex : engagement."},
-  {word: "AUTORITÉ", definition: "Pouvoir de commander ou d'imposer.", hint: "Ex : qui fait référence."}
+    const flashcardsFacile = [
+  {word: "MAISON", definition: "Lieu où l'on habite.", hint: "Indice : elle peut être entourée d'un jardin."},
+  {word: "CHAT", definition: "Petit animal domestique qui miaule.", hint: "Indice : il ronronne quand on le caresse."},
+  {word: "CHIEN", definition: "Animal domestique qui aboie.", hint: "Indice : il remue la queue quand il est content."},
+  {word: "SOLEIL", definition: "Astre qui donne la lumière du jour.", hint: "Indice : il se lève le matin et se couche le soir."},
+  {word: "LUNE", definition: "Astre que l'on voit la nuit.", hint: "Indice : elle change de forme au fil des nuits."},
+  {word: "EAU", definition: "Liquide que l'on boit.", hint: "Indice : elle coule du robinet."},
+  {word: "PAIN", definition: "Aliment fait avec de la farine.", hint: "Indice : on le trempe dans la soupe ou le café."},
+  {word: "TABLE", definition: "Meuble pour manger ou écrire.", hint: "Indice : on y pose les assiettes pour manger."},
+  {word: "CHAISE", definition: "Meuble pour s'asseoir.", hint: "Indice : elle a quatre pieds et un dossier."},
+  {word: "FENÊTRE", definition: "Ouverture qui laisse entrer la lumière.", hint: "Indice : on l'ouvre pour aérer la pièce."},
+  {word: "PORTE", definition: "Ouverture pour entrer ou sortir.", hint: "Indice : on frappe dessus avant d'entrer."},
+  {word: "JARDIN", definition: "Terrain où l'on cultive des plantes.", hint: "Indice : on y plante des fleurs et des légumes."},
+  {word: "FLEUR", definition: "Partie colorée et parfumée d'une plante.", hint: "Indice : elle sent bon et pousse dans un vase."},
+  {word: "ARBRE", definition: "Grande plante avec un tronc et des branches.", hint: "Indice : les oiseaux y font leur nid."},
+  {word: "OISEAU", definition: "Animal qui vole et qui a des plumes.", hint: "Indice : il a des ailes et pond des œufs."},
+  {word: "VOITURE", definition: "Véhicule à moteur pour se déplacer.", hint: "Indice : elle a quatre roues et un volant."},
+  {word: "VÉLO", definition: "Véhicule à deux roues sans moteur.", hint: "Indice : on pédale pour le faire avancer."},
+  {word: "TÉLÉPHONE", definition: "Appareil qui sert à appeler quelqu'un.", hint: "Indice : il sonne quand quelqu'un vous appelle."},
+  {word: "LIVRE", definition: "Objet avec des pages que l'on lit.", hint: "Indice : on le feuillette pour découvrir une histoire."},
+  {word: "LETTRE", definition: "Message écrit envoyé par la poste.", hint: "Indice : le facteur la dépose dans la boîte."},
+  {word: "CUISINE", definition: "Pièce où l'on prépare les repas.", hint: "Indice : on y sent souvent de bonnes odeurs."},
+  {word: "CHAMBRE", definition: "Pièce où l'on dort.", hint: "Indice : on y trouve une armoire et un lit."},
+  {word: "LIT", definition: "Meuble sur lequel on dort.", hint: "Indice : on s'y glisse sous la couette."},
+  {word: "MATIN", definition: "Début de la journée.", hint: "Indice : le coq chante à ce moment de la journée."},
+  {word: "SOIR", definition: "Fin de la journée.", hint: "Indice : le soleil se couche à ce moment-là."},
+  {word: "HIVER", definition: "Saison la plus froide de l'année.", hint: "Indice : on porte un manteau et des gants."},
+  {word: "ÉTÉ", definition: "Saison la plus chaude de l'année.", hint: "Indice : on va se baigner et on porte des sandales."},
+  {word: "PLUIE", definition: "Eau qui tombe du ciel.", hint: "Indice : elle mouille les rues et fait pousser les plantes."},
+  {word: "NEIGE", definition: "Flocons blancs qui tombent en hiver.", hint: "Indice : elle recouvre tout de blanc."},
+  {word: "FAMILLE", definition: "Les parents et les enfants réunis.", hint: "Indice : on s'y retrouve pour les fêtes de fin d'année."},
+  {word: "AMI", definition: "Personne que l'on apprécie beaucoup.", hint: "Indice : on partage de bons moments avec lui."},
+  {word: "VOISIN", definition: "Personne qui habite tout près.", hint: "Indice : il habite juste à côté de chez vous."},
+  {word: "MÉDECIN", definition: "Personne qui soigne les malades.", hint: "Indice : il ausculte avec un stéthoscope."},
+  {word: "INFIRMIÈRE", definition: "Personne qui aide les malades à l'hôpital.", hint: "Indice : elle porte une blouse à l'hôpital."},
+  {word: "MARCHÉ", definition: "Lieu en plein air où l'on achète des produits.", hint: "Indice : les vendeurs y installent leurs étals en plein air."},
+  {word: "MAGASIN", definition: "Lieu où l'on achète des objets.", hint: "Indice : on y fait la queue à la caisse."},
+  {word: "ARGENT", definition: "Ce qui sert à payer les achats.", hint: "Indice : il peut être en pièces ou en billets."},
+  {word: "CADEAU", definition: "Objet que l'on offre à quelqu'un.", hint: "Indice : il est souvent enveloppé avec un ruban."},
+  {word: "ANNIVERSAIRE", definition: "Jour où l'on fête sa naissance.", hint: "Indice : on souffle des bougies sur un gâteau."},
+  {word: "FÊTE", definition: "Moment joyeux partagé avec d'autres.", hint: "Indice : on y danse et on y chante ensemble."},
+  {word: "MUSIQUE", definition: "Suite de sons agréables à écouter.", hint: "Indice : elle se joue avec des instruments."},
+  {word: "CHANSON", definition: "Musique accompagnée de paroles.", hint: "Indice : elle a des paroles et une mélodie."},
+  {word: "DANSE", definition: "Mouvement du corps en rythme avec la musique.", hint: "Indice : on bouge le corps en suivant le rythme."},
+  {word: "PHOTO", definition: "Image prise avec un appareil.", hint: "Indice : on la prend avec un appareil pour garder un souvenir."},
+  {word: "COULEUR", definition: "Aspect visuel comme le rouge ou le bleu.", hint: "Indice : le rouge et le bleu en sont des exemples."},
+  {word: "NUMÉRO", definition: "Suite de chiffres qui identifie quelque chose.", hint: "Indice : il compose une suite de chiffres."},
+  {word: "HEURE", definition: "Unité qui sert à mesurer le temps.", hint: "Indice : elle est indiquée par les aiguilles d'une montre."},
+  {word: "SEMAINE", definition: "Période de sept jours.", hint: "Indice : elle commence le lundi et finit le dimanche."},
+  {word: "REPAS", definition: "Moment où l'on mange.", hint: "Indice : la famille se réunit autour de la table à ce moment."},
+  {word: "CAFÉ", definition: "Boisson chaude que l'on boit souvent le matin.", hint: "Indice : il réveille et se boit souvent avec du sucre."}
 ];
+    const flashcardsMoyen = [
+  {word: "GÉNÉROSITÉ", definition: "Qualité d'une personne qui donne sans compter.", hint: "Indice : donner sans rien attendre en retour."},
+  {word: "PATIENCE", definition: "Capacité à attendre calmement.", hint: "Indice : savoir attendre sans s'énerver."},
+  {word: "SOUVENIR", definition: "Ce que l'on garde en mémoire.", hint: "Indice : une image du passé qui revient en tête."},
+  {word: "HABITUDE", definition: "Chose que l'on fait régulièrement.", hint: "Indice : un geste que l'on répète chaque jour."},
+  {word: "SANTÉ", definition: "État du corps, bien portant ou malade.", hint: "Indice : le médecin veille sur elle."},
+  {word: "RESPECT", definition: "Considération que l'on a envers quelqu'un.", hint: "Indice : traiter les autres avec considération."},
+  {word: "POLITESSE", definition: "Manière courtoise de se comporter.", hint: "Indice : dire bonjour et merci."},
+  {word: "TRADITION", definition: "Coutume transmise de génération en génération.", hint: "Indice : une coutume transmise depuis longtemps."},
+  {word: "VOISINAGE", definition: "Ensemble des personnes qui habitent près de chez soi.", hint: "Indice : les gens qui habitent tout près de chez vous."},
+  {word: "PROMENADE", definition: "Sortie à pied pour se détendre.", hint: "Indice : une marche tranquille au grand air."},
+  {word: "RÉCOLTE", definition: "Action de ramasser les fruits ou légumes.", hint: "Indice : le moment où l'on ramasse les fruits du jardin."},
+  {word: "SAISON", definition: "Chacune des quatre périodes de l'année.", hint: "Indice : le printemps ou l'automne en sont des exemples."},
+  {word: "TEMPÊTE", definition: "Vent très fort accompagné de pluie.", hint: "Indice : le vent souffle fort et casse les branches."},
+  {word: "PAYSAGE", definition: "Vue d'un lieu, nature ou ville.", hint: "Indice : ce que l'on admire depuis un point de vue."},
+  {word: "VILLAGE", definition: "Petite commune à la campagne.", hint: "Indice : une petite commune avec une église et une place."},
+  {word: "QUARTIER", definition: "Partie d'une ville.", hint: "Indice : une partie d'une ville où l'on habite."},
+  {word: "RÉUNION", definition: "Rencontre de plusieurs personnes.", hint: "Indice : plusieurs personnes se retrouvent autour d'une table."},
+  {word: "INVITATION", definition: "Demande faite à quelqu'un de venir.", hint: "Indice : on la reçoit avant d'aller dîner chez quelqu'un."},
+  {word: "RECONNAISSANCE", definition: "Sentiment de gratitude envers quelqu'un.", hint: "Indice : ce que l'on ressent quand on dit merci du fond du cœur."},
+  {word: "TENDRESSE", definition: "Sentiment doux d'affection.", hint: "Indice : un câlin ou un mot doux en sont l'expression."},
+  {word: "COURAGE", definition: "Force pour affronter une difficulté.", hint: "Indice : ce qu'il faut pour affronter une épreuve."},
+  {word: "CONFORT", definition: "Sensation de bien-être matériel.", hint: "Indice : ce que procure un bon fauteuil bien moelleux."},
+  {word: "SÉCURITÉ", definition: "Absence de danger.", hint: "Indice : se sentir protégé, sans aucun danger."},
+  {word: "TRANQUILLITÉ", definition: "État calme, sans agitation.", hint: "Indice : le calme d'un dimanche après-midi à la campagne."},
+  {word: "DOULEUR", definition: "Sensation physique désagréable.", hint: "Indice : une sensation désagréable, par exemple au dos."},
+  {word: "FATIGUE", definition: "Sensation de manque d'énergie.", hint: "Indice : l'envie de se reposer après une longue journée."},
+  {word: "REPOS", definition: "Moment sans activité pour se reposer.", hint: "Indice : une sieste ou un moment sans rien faire."},
+  {word: "GUÉRISON", definition: "Retour à la bonne santé.", hint: "Indice : le retour à la bonne santé après une maladie."},
+  {word: "MÉDICAMENT", definition: "Produit qui sert à soigner.", hint: "Indice : ce que l'on prend avec un verre d'eau, prescrit par le médecin."},
+  {word: "RENDEZ-VOUS", definition: "Moment fixé pour rencontrer quelqu'un.", hint: "Indice : une heure fixée pour retrouver quelqu'un."},
+  {word: "ORDONNANCE", definition: "Papier écrit par le médecin pour les médicaments.", hint: "Indice : le papier que remet le médecin pour la pharmacie."},
+  {word: "PHARMACIE", definition: "Lieu où l'on achète des médicaments.", hint: "Indice : la croix verte au-dessus de la porte l'indique."},
+  {word: "AFFECTION", definition: "Sentiment tendre envers quelqu'un.", hint: "Indice : le sentiment tendre que l'on porte à ses proches."},
+  {word: "COMPAGNIE", definition: "Présence de quelqu'un auprès de soi.", hint: "Indice : la présence rassurante de quelqu'un à ses côtés."},
+  {word: "SOLITUDE", definition: "État d'une personne seule.", hint: "Indice : se retrouver seul, sans personne autour."},
+  {word: "JOIE", definition: "Sentiment de grand bonheur.", hint: "Indice : ce que l'on ressent en retrouvant sa famille."},
+  {word: "TRISTESSE", definition: "Sentiment de chagrin.", hint: "Indice : ce que l'on ressent lors d'un départ."},
+  {word: "SURPRISE", definition: "Chose inattendue.", hint: "Indice : quelque chose d'inattendu, souvent agréable."},
+  {word: "HABITATION", definition: "Lieu où l'on vit.", hint: "Indice : le lieu où l'on vit au quotidien."},
+  {word: "GÉNÉRATION", definition: "Ensemble des personnes du même âge.", hint: "Indice : les grands-parents, les parents et les enfants n'en forment pas une seule."},
+  {word: "PROVERBE", definition: "Phrase populaire qui donne une leçon de vie.", hint: "Indice : « petit à petit, l'oiseau fait son nid » en est un exemple."},
+  {word: "MÉMOIRE", definition: "Capacité à se souvenir.", hint: "Indice : elle permet de se rappeler les visages et les dates."},
+  {word: "VIGILANCE", definition: "Attention portée pour éviter un danger.", hint: "Indice : rester attentif avant de traverser la rue."},
+  {word: "RÉCONFORT", definition: "Soulagement moral apporté à quelqu'un.", hint: "Indice : ce qu'apporte une parole amicale dans un moment difficile."},
+  {word: "ENTRAIDE", definition: "Aide mutuelle entre plusieurs personnes.", hint: "Indice : s'aider les uns les autres entre voisins."},
+  {word: "SOLIDARITÉ", definition: "Soutien mutuel entre les gens.", hint: "Indice : le soutien que l'on apporte à ceux qui traversent une épreuve."},
+  {word: "GRATITUDE", definition: "Sentiment de reconnaissance envers quelqu'un.", hint: "Indice : le sentiment que l'on éprouve en disant merci sincèrement."},
+  {word: "HOSPITALITÉ", definition: "Qualité d'une personne qui accueille chaleureusement.", hint: "Indice : la manière chaleureuse d'accueillir un invité chez soi."},
+  {word: "CURIOSITÉ", definition: "Envie de découvrir ou d'apprendre.", hint: "Indice : l'envie de découvrir et de poser des questions."},
+  {word: "SIMPLICITÉ", definition: "Qualité de ce qui est simple.", hint: "Indice : la qualité d'un geste sans complication ni artifice."}
+];
+    const flashcardsDifficile = [
+  {word: "COHÉSION", definition: "Force qui unit les éléments d'un groupe.", hint: "Indice : solidarité."},
+  {word: "ÉLABORER", definition: "Créer quelque chose de manière réfléchie.", hint: "Indice : construire un plan."},
+  {word: "CONSTATER", definition: "Reconnaître une réalité par observation.", hint: "Indice : vérifier un fait."},
+  {word: "ATTENTION", definition: "Concentration sur quelque chose.", hint: "Indice : vigilance."},
+  {word: "DÉBAT", definition: "Discussion organisée sur un sujet.", hint: "Indice : échange d'arguments."},
+  {word: "ANALYSER", definition: "Examiner en détail pour comprendre.", hint: "Indice : étudier un problème."},
+  {word: "ACCÉDER", definition: "Parvenir à entrer ou obtenir un accès.", hint: "Indice : entrer dans un lieu."},
+  {word: "PENSER", definition: "Avoir des idées dans son esprit.", hint: "Indice : réfléchir."},
+  {word: "ANALOGIE", definition: "Ressemblance entre des choses différentes.", hint: "Indice : comparaison ou similitude."},
+  {word: "ÉQUIVALENT", definition: "Qui a la même valeur ou fonction.", hint: "Indice : approchant."},
+  {word: "QUESTION", definition: "Phrase ou idée qui demande une réponse.", hint: "Indice : interrogation."},
+  {word: "COMPLEXITÉ", definition: "Caractère de ce qui est compliqué.", hint: "Indice : difficulté à comprendre."},
+  {word: "CONFRONTER", definition: "Mettre face à une réalité ou un problème.", hint: "Indice : affronter."},
+  {word: "CONSOLIDER", definition: "Rendre plus solide ou stable.", hint: "Indice : renforcer une structure."},
+  {word: "CULTIVÉ", definition: "Qui a une grande culture intellectuelle.", hint: "Indice : personne érudite."},
+  {word: "CRITÈRE", definition: "Règle ou norme pour évaluer.", hint: "Indice : standard de jugement."},
+  {word: "CONTRIBUTION", definition: "Participation à un effort commun.", hint: "Indice : apport individuel."},
+  {word: "CAPABLE", definition: "Qui peut faire quelque chose.", hint: "Indice : réussir une tâche."},
+  {word: "CHERCHER", definition: "Essayer de trouver quelque chose.", hint: "Indice : trouver un objet."},
+  {word: "NOUVEAU", definition: "Qui n'existait pas avant.", hint: "Indice : récent."},
+  {word: "MANGER", definition: "Prendre un repas ou de la nourriture.", hint: "Indice : se nourrir."},
+  {word: "ÉCOUTER", definition: "Prêter attention à un son ou une parole.", hint: "Indice : entendre volontairement."},
+  {word: "ENVIRONNEMENT", definition: "Milieu naturel ou social.", hint: "Indice : cadre de vie."},
+  {word: "DIMENSION", definition: "Mesure dans une direction.", hint: "Indice : longueur, largeur."},
+  {word: "ARTICLE", definition: "Texte écrit dans un journal ou une revue.", hint: "Indice : publication périodique."},
+  {word: "BONHEUR", definition: "État de joie profonde et durable.", hint: "Indice : être très heureux."},
+  {word: "CONFIANCE", definition: "Sentiment de sécurité envers quelqu'un.", hint: "Indice : sentiment de sécurité que l'on éprouve envers une personne."},
+  {word: "ACCIDENT", definition: "Événement imprévu causant souvent un dommage.", hint: "Indice : choc sur la route."},
+  {word: "DÉDUCTIF", definition: "Qui procède par déduction.", hint: "Indice : raisonnement logique."},
+  {word: "COMPRENDRE", definition: "Saisir le sens de quelque chose.", hint: "Indice : saisir le sens de ce qu'on nous explique."},
+  {word: "CRITIQUE", definition: "Analyse ou jugement sur une œuvre.", hint: "Indice : avis constructif."},
+  {word: "CONSTRUIRE", definition: "Bâtir ou édifier quelque chose.", hint: "Indice : créer une structure."},
+  {word: "DIFFICILE", definition: "Qui n'est pas facile à faire.", hint: "Indice : un problème complexe."},
+  {word: "INTÉRÊT", definition: "Ce qui attire l'attention.", hint: "Indice : curiosité."},
+  {word: "ASTREINDRE", definition: "Obliger quelqu'un à faire quelque chose.", hint: "Indice : contraindre."},
+  {word: "CONCIS", definition: "Qui exprime beaucoup en peu de mots.", hint: "Indice : breveté."},
+  {word: "BIENVEILLANCE", definition: "Disposition à vouloir du bien.", hint: "Indice : attitude positive."},
+  {word: "CONNAISSANCE", definition: "Savoir acquis par l'étude ou l'expérience.", hint: "Indice : savoir théorique ou pratique."},
+  {word: "CONSIDÉRABLE", definition: "Qui mérite une grande attention.", hint: "Indice : important ou notable."},
+  {word: "CONSÉQUENT", definition: "Qui a des effets importants.", hint: "Indice : résultat significatif."},
+  {word: "COOPÉRATION", definition: "Action de travailler ensemble.", hint: "Indice : collaboration."},
+  {word: "CONFLIT", definition: "Affrontement d'idées ou d'intérêts.", hint: "Indice : désaccord."},
+  {word: "AVANTAGE", definition: "Point positif dans une situation.", hint: "Indice : ce qui aide à réussir."},
+  {word: "MONTRER", definition: "Faire voir quelque chose.", hint: "Indice : présenter un objet."},
+  {word: "IMPORTANT", definition: "Qui a une grande valeur ou influence.", hint: "Indice : essentiel."},
+  {word: "COHÉRENCE", definition: "Qualité de ce qui est logique et lié.", hint: "Indice : unité entre les parties."},
+  {word: "TRAVAILLER", definition: "Faire une activité professionnelle ou scolaire.", hint: "Indice : effort productif."},
+  {word: "CONSEQUENCE", definition: "Résultat logique d'une action.", hint: "Indice : effet d'une cause."},
+  {word: "AUTONOMIE", definition: "Capacité à se gouverner soi-même.", hint: "Indice : indépendance."},
+  {word: "BÉNÉVOLE", definition: "Qui agit sans attente de récompense.", hint: "Indice : volontaire."},
+  {word: "COLLABORATION", definition: "Travail commun entre plusieurs personnes.", hint: "Indice : coopération."},
+  {word: "COMPRÉHENSIBLE", definition: "Qui peut être compris.", hint: "Indice : clair et accessible."},
+  {word: "CONCEVOIR", definition: "Imaginer ou créer dans l'esprit.", hint: "Indice : inventer un projet."},
+  {word: "UTILISER", definition: "Se servir de quelque chose.", hint: "Indice : employer un outil."},
+  {word: "ACADÉMIQUE", definition: "Qui concerne l'enseignement supérieur ou les études.", hint: "Indice : une année universitaire."},
+  {word: "LANGAGE", definition: "Manière de s'exprimer avec des mots.", hint: "Indice : langue parlée."},
+  {word: "COMPATIBILITÉ", definition: "Capacité à coexister sans conflit.", hint: "Indice : harmonie entre systèmes."},
+  {word: "CONFIRMER", definition: "Rendre certain ou officiel.", hint: "Indice : valider une information."},
+  {word: "PERMETTRE", definition: "Autoriser quelque chose.", hint: "Indice : donner la permission."},
+  {word: "CONSEIL", definition: "Recommandation donnée pour aider.", hint: "Indice : une aide pour décider."},
+  {word: "CONTRADICTION", definition: "Opposition entre deux affirmations.", hint: "Indice : désaccord logique."},
+  {word: "CIRCONSTANCE", definition: "Condition ou fait accompagnant un événement.", hint: "Indice : contexte particulier."},
+  {word: "CONTRIBUER", definition: "Apporter une aide ou une participation.", hint: "Indice : participer à un projet."},
+  {word: "DÉBROUILLARD", definition: "Qui sait se tirer des situations difficiles.", hint: "Indice : ingénieux."},
+  {word: "ABSOLU", definition: "Qui est total, sans limite ni condition.", hint: "Indice : une vérité sans exception."},
+  {word: "RESTER", definition: "Ne pas partir.", hint: "Indice : demeurer."},
+  {word: "CONTRADICTOIRE", definition: "Qui contient une opposition.", hint: "Indice : débat où s'affrontent des avis."},
+  {word: "COMPLÉMENTARITÉ", definition: "Relation où deux choses se complètent.", hint: "Indice : mutualisation des forces."},
+  {word: "ARGUMENT", definition: "Raison avancée pour justifier une idée.", hint: "Indice : preuve dans un débat."},
+  {word: "FAMILLE", definition: "Groupe de personnes liées par parenté.", hint: "Indice : parents et enfants."},
+  {word: "PARLER", definition: "Exprimer des idées avec des mots.", hint: "Indice : conversation."},
+  {word: "DÉFINITIF", definition: "Qui est sans retour ou irrévocable.", hint: "Indice : décision finale."},
+  {word: "COMPARER", definition: "Examiner les différences et similitudes.", hint: "Indice : mettre en parallèle."},
+  {word: "BESOIN", definition: "Nécessité de quelque chose.", hint: "Indice : avoir faim ou soif."},
+  {word: "CONTENU", definition: "Ce qui est inclus dans un récipient ou un texte.", hint: "Indice : matière ou substance."},
+  {word: "RAPIDE", definition: "Qui va vite.", hint: "Indice : contraire de lent."},
+  {word: "MESSAGE", definition: "Information transmise à quelqu'un.", hint: "Indice : SMS ou note."},
+  {word: "NATUREL", definition: "Qui vient sans artifice.", hint: "Indice : non artificiel."},
+  {word: "CHOISIR", definition: "Sélectionner entre plusieurs options.", hint: "Indice : décider entre deux choses."},
+  {word: "CONFÉRENCE", definition: "Réunion pour discuter d'un sujet précis.", hint: "Indice : séminaire."},
+  {word: "GARDER", definition: "Conserver quelque chose.", hint: "Indice : ne pas perdre."},
+  {word: "COMPÉTENCE", definition: "Capacité à accomplir une tâche.", hint: "Indice : savoir-faire."},
+  {word: "CONSULTER", definition: "Demander un avis ou une information.", hint: "Indice : se renseigner."},
+  {word: "CALCULER", definition: "Effectuer une opération mathématique.", hint: "Indice : faire une addition."},
+  {word: "DÉFINIR", definition: "Donner une explication précise.", hint: "Indice : clarifier un concept."},
+  {word: "RAISON", definition: "Explication logique.", hint: "Indice : justification."},
+  {word: "JEUNE", definition: "Qui a peu d'âge.", hint: "Indice : enfant ou adolescent."},
+  {word: "DÉCIDER", definition: "Prendre une décision.", hint: "Indice : faire un choix."},
+  {word: "CONVAINCRE", definition: "Amener quelqu'un à partager une opinion.", hint: "Indice : persuader."},
+  {word: "CANDIDAT", definition: "Personne qui postule à un poste.", hint: "Indice : participant à une élection."},
+  {word: "EXPÉRIENCE", definition: "Connaissance acquise par la pratique.", hint: "Indice : savoir-faire."},
+  {word: "DIFFÉRENCE", definition: "Ce qui distingue deux choses.", hint: "Indice : particularité."},
+  {word: "ESSAYER", definition: "Tenter de faire quelque chose.", hint: "Indice : tester une action."},
+  {word: "CONCLURE", definition: "Terminer un raisonnement.", hint: "Indice : finir une argumentation."},
+  {word: "DÉCISION", definition: "Choix fait après réflexion.", hint: "Indice : résolution prise."},
+  {word: "ACQUÉRIR", definition: "Obtenir par l'effort ou l'expérience.", hint: "Indice : apprendre une compétence."},
+  {word: "EXEMPLE", definition: "Cas concret illustrant une idée.", hint: "Indice : illustration."},
+  {word: "ASSOCIER", definition: "Mettre ensemble des éléments.", hint: "Indice : lier deux idées."},
+  {word: "DÉMONTRER", definition: "Prouver par des faits ou des arguments.", hint: "Indice : montrer une vérité."},
+  {word: "CHAPITRE", definition: "Division d'un livre ou d'un texte.", hint: "Indice : partie d'un roman."},
+  {word: "BÉNÉFICE", definition: "Avantage ou gain obtenu.", hint: "Indice : profit financier."},
+  {word: "DIVERSITÉ", definition: "Variété d'éléments différents.", hint: "Indice : richesse des différences."},
+  {word: "ACCOMPAGNER", definition: "Être avec quelqu'un pour l'aider ou le guider.", hint: "Indice : aller avec quelqu'un."},
+  {word: "IMAGINER", definition: "Créer des images dans son esprit.", hint: "Indice : inventer mentalement."},
+  {word: "FACILE", definition: "Qui demande peu d'effort.", hint: "Indice : simple à faire."},
+  {word: "LIRE", definition: "Comprendre un texte écrit.", hint: "Indice : livre ou article."},
+  {word: "ÉLÉMENT", definition: "Composant d'un ensemble.", hint: "Indice : partie constitutive."},
+  {word: "DIRECTEUR", definition: "Personne qui dirige une organisation.", hint: "Indice : chef d'entreprise."},
+  {word: "CONTEXTE", definition: "Ensemble des circonstances autour d'un événement.", hint: "Indice : cadre d'une situation."},
+  {word: "DISCUTER", definition: "Parler avec échange d'idées.", hint: "Indice : débattre calmement."},
+  {word: "ENQUÊTE", definition: "Recherche approfondie sur un sujet.", hint: "Indice : investigation."},
+  {word: "DÉVELOPPER", definition: "Faire évoluer ou grandir.", hint: "Indice : améliorer une idée."},
+  {word: "APPRÉHENDER", definition: "Saisir par l'esprit ou les sens.", hint: "Indice : comprendre profondément."},
+  {word: "ANTHROPOLOGIE", definition: "Étude des sociétés et des cultures humaines.", hint: "Indice : science sociale."},
+  {word: "ACCEPTER", definition: "Dire oui, consentir à quelque chose.", hint: "Indice : dire oui à ce qui est proposé."},
+  {word: "VOIR", definition: "Percevoir avec les yeux.", hint: "Indice : regarder."},
+  {word: "EFFICACITÉ", definition: "Capacité à produire un résultat.", hint: "Indice : rendement optimal."},
+  {word: "ADMINISTRATION", definition: "Organisation qui gère un service ou un État.", hint: "Indice : services publics."},
+  {word: "COMMUNIQUER", definition: "Transmettre une information.", hint: "Indice : échanger des idées."},
+  {word: "DISTINGUER", definition: "Reconnaître une différence.", hint: "Indice : discerner."},
+  {word: "ASSIMILER", definition: "Intégrer une connaissance ou une culture.", hint: "Indice : absorber une information."},
+  {word: "DOCUMENT", definition: "Support contenant une information écrite.", hint: "Indice : texte officiel."},
+  {word: "ARCHÉTYPE", definition: "Modèle original ou idéal.", hint: "Indice : exemple parfait."},
+  {word: "ALTERNATIVE", definition: "Choix entre deux options exclusives.", hint: "Indice : solution de rechange."},
+  {word: "ARGUMENTATION", definition: "Art de raisonner pour convaincre.", hint: "Indice : discours logique."},
+  {word: "AFFIRMATION", definition: "Déclaration formelle d'une vérité.", hint: "Indice : assertion."},
+  {word: "CRÉATIVITÉ", definition: "Capacité à innover ou inventer.", hint: "Indice : imagination fertile."},
+  {word: "ÉVOLUTION", definition: "Changement progressif.", hint: "Indice : transformation."},
+  {word: "EXPLIQUER", definition: "Rendre quelque chose clair.", hint: "Indice : donner des détails."},
+  {word: "ALGORITHME", definition: "Ensemble de règles pour résoudre un problème.", hint: "Indice : procédure informatique."},
+  {word: "AMBIGUÏTÉ", definition: "Caractère de ce qui peut avoir plusieurs sens.", hint: "Indice : manque de clarté."},
+  {word: "COMPREHENSION", definition: "Acte de saisir le sens.", hint: "Indice : capacité à saisir le sens de ce qu'on lit ou entend."},
+  {word: "ÉVALUER", definition: "Estimer la valeur ou l'importance.", hint: "Indice : juger une performance."},
+  {word: "CAPACITÉ", definition: "Pouvoir ou aptitude à faire quelque chose.", hint: "Indice : mémoire ou talent."},
+  {word: "ÉTABLIR", definition: "Fonder ou installer quelque chose.", hint: "Indice : créer une règle."},
+  {word: "OUVRIR", definition: "Rendre accessible en retirant une fermeture.", hint: "Indice : porte ou livre."},
+  {word: "JOLI", definition: "Beau de manière simple.", hint: "Indice : agréable à voir."},
+  {word: "ÉTUDE", definition: "Travail d'analyse ou d'apprentissage.", hint: "Indice : recherche approfondie."},
+  {word: "PRENDRE", definition: "Saisir ou utiliser quelque chose.", hint: "Indice : attraper."},
+  {word: "CULTURE", definition: "Ensemble des connaissances et traditions.", hint: "Indice : patrimoine intellectuel."},
+  {word: "ARBITRAIRE", definition: "Qui dépend de la volonté sans règle fixe.", hint: "Indice : décision souvent injuste."},
+  {word: "ANTICIPER", definition: "Prévoir à l'avance.", hint: "Indice : devancer un événement."},
+  {word: "ABSTRACTION", definition: "Action de considérer une idée de manière générale.", hint: "Indice : concept théorique."},
+  {word: "ADAPTATION", definition: "Processus d'ajustement à une nouvelle situation.", hint: "Indice : modification."},
+  {word: "ADHÉRENCE", definition: "Action de se joindre à une idée ou un groupe.", hint: "Indice : engagement."},
+  {word: "AUTORITÉ", definition: "Pouvoir de commander ou d'imposer.", hint: "Indice : qui fait référence."}
+];
+    const levels = {
+        facile: flashcardsFacile,
+        moyen: flashcardsMoyen,
+        difficile: flashcardsDifficile
+    };
+    let currentLevel = 'facile';
+    let flashcards = levels[currentLevel];
     let currentIndex = 0;
     const cardEl = document.getElementById('card');
+
+    function selectLevel(level) {
+        currentLevel = level;
+        flashcards = levels[level];
+        currentIndex = 0;
+
+        document.getElementById('btnFacile').classList.remove('active');
+        document.getElementById('btnMoyen').classList.remove('active');
+        document.getElementById('btnDifficile').classList.remove('active');
+        document.getElementById('btn' + level.charAt(0).toUpperCase() + level.slice(1)).classList.add('active');
+
+        cardEl.classList.remove('flipped');
+        updateCard();
+    }
 
     function updateCard() {
         cardEl.classList.remove('flipped');
